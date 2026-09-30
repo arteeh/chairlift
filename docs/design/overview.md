@@ -1321,7 +1321,7 @@ fixed surfaces: `data/io.projectbluefin.chairlift.bootc.policy`,
 resolves the program it's asked to run to an absolute path and compares it
 textually against the `org.freedesktop.policykit.exec.path` annotation on each
 action. The updex policy's three actions annotate
-`/usr/bin/chairlift-updex-helper`; the ublue policy's nine actions annotate
+`/usr/bin/chairlift-updex-helper`; the ublue policy's eleven actions annotate
 `/usr/bin/chairlift-helper`. Both helper policies use
 `org.freedesktop.policykit.exec.argv1` to select exactly one action for the
 first helper argument. PolicyKit does not validate the remainder of argv, so
@@ -1332,8 +1332,8 @@ accepts only `enable-feature <name> [--dry-run]`, `disable-feature <name>
 <stable|testing> [--dry-run]`, `dx-enable [--dry-run]`, `dx-disable
 [--dry-run]`, `restart [--dry-run]`, `rollback [--dry-run]`,
 `auto-updates-enable [--dry-run]`, `auto-updates-disable [--dry-run]`,
-`driver-switch <standard|nvidia|nvidia-open> [--dry-run]`, and `factory-reset
-[--dry-run]`. A bare, `$PATH`-resolved command name can resolve to a different
+`driver-switch <standard|nvidia|nvidia-open> [--dry-run]`, `factory-reset
+[--dry-run]`, `pin <YYYYMMDD> [--dry-run]`, and `unpin [--dry-run]`. A bare, `$PATH`-resolved command name can resolve to a different
 absolute path depending on the invoking process's `$PATH`, which makes the
 path comparison miss and falls `pkexec` back to the generic, more restrictive
 action. The wrapper packages therefore always invoke their fixed `HelperPath`
@@ -1341,7 +1341,7 @@ constants, never a bare name.
 
 Two inputs deliberately never cross the pkexec boundary as arguments:
 
-- **The target image reference.** Only a channel word is passed. The helper
+- **The target image reference.** Only a validated channel, driver, or day word is passed. The helper
   resolves the concrete reference itself, from the read-only image descriptor
   at `internal/imageinfo.DescriptorPath` and the channel table below. An
   authenticated caller therefore cannot direct `bootc switch` at an arbitrary

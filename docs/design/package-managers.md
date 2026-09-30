@@ -758,10 +758,32 @@ network: `registrytags_test.go` drives a loopback `httptest` registry that
 models GHCR's Link-header pagination, its Content-Type-only manifest media
 type, and its 404 `MANIFEST_UNKNOWN` body.
 
-Pinning to a dated tag is not implemented here and is not unblocked by this
-package. `chairlift-helper` accepts no image reference (ADR-0001), so a
-pin has to be a new privileged operation whose target the helper derives from
-a validated grammar, as `channel-switch` already does for its own target.
+### Privileged pin and unpin
+
+`ublue.Pin(ctx, day)` and `ublue.Unpin(ctx)` dispatch through `runHelper`,
+including its unconditional journal and dry-run handling. The fixed
+`/usr/bin/chairlift-helper` accepts `pin <YYYYMMDD> [--dry-run]` and
+`unpin [--dry-run]`. The day must be eight ASCII digits naming a real date
+no later than today UTC. No image reference crosses pkexec (ADR-0001).
+Recovery's selection UI is separate work in #360.
+
+`ubluehelper.PinArgs` owns the derivation and resolver seam required by
+[ADR-0017](../adr/0017-pin-through-a-validated-day-word.md). It recovers the
+stream from the booted tag with `registrytags.ParseBuild`, or uses a plain
+stream tag as-is, and requires `imageinfo.KnownStream` for the descriptor's
+`CleanRef()`. Pin tries `<stream>-<day>` before `<stream>.<day>`; only
+`ErrUnknownTag` permits the second lookup. Unpin requires a dated booted tag
+and verifies `<stream>`. Both call only `Client.Tag`, never a listing or
+catalog cache, and discard all returned registry strings. Missing builds,
+registry failures, and timeouts return no command argv. Successful targets
+retain `bootc switch --enforce-container-sigpolicy`.
+
+Dry runs derive and print the first candidate without contacting the registry;
+the preview is not evidence that the tag exists. Both commands fail closed
+when the system channel table cannot load. Their two PolicyKit actions use
+`auth_admin` / `auth_admin` / `auth_admin_keep` and the existing fixed helper
+path. They ship in the existing ublue policy through `make install` and the
+Homebrew release archive; there are no nFPM packages.
 
 ## Updex (`internal/updex/updex.go`)
 

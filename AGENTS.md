@@ -166,8 +166,8 @@ An agent must not break these:
   privileged command execution, broaden what pkexec runs, or route new
   mutations around the fixed helper/policy pair.
 - **Neither an image reference nor a username crosses the ublue pkexec
-  boundary.** `chairlift-helper` receives a channel word only, and
-  derives the concrete `bootc switch` target itself from the read-only image
+  boundary.** `chairlift-helper` receives a validated channel, driver, or day
+  word only, and derives the concrete `bootc switch` target itself from the read-only image
   descriptor plus the channel table; it derives the account to modify from
   the `PKEXEC_UID` pkexec sets, never from argv. Accepting either as an
   argument would let an authenticated caller switch the machine to an
@@ -244,10 +244,10 @@ An agent must not break these:
   system, so a successful OS source is not by itself evidence anything
   changed.
 - **New privileged operations extend the ublue helper; they do not add a
-  binary.** `chairlift-helper` carries nine subcommands
+  binary.** `chairlift-helper` carries eleven subcommands
   (`channel-switch`, `dx-enable`, `dx-disable`, `restart`, `rollback`,
   `auto-updates-enable`, `auto-updates-disable`, `driver-switch`,
-  `factory-reset`), each selected by exactly one PolicyKit
+  `factory-reset`, `pin`, `unpin`), each selected by exactly one PolicyKit
   action. Every one takes a fixed argv or a word validated against a closed
   set: no image reference, no username, no systemd unit, no delay, and no
   rollback or reset target crosses the boundary, because each
@@ -259,6 +259,13 @@ An agent must not break these:
   GUI sends nothing but the command word — a factory reset has exactly one
   target, the image already booted, so there is nothing for a caller to name.
   `rollback` is the same shape with an even shorter argv.
+  `pin <YYYYMMDD>` accepts only a real day no later than today UTC; `unpin`
+  accepts no argument. `ubluehelper.PinArgs` recovers the booted stream and
+  checks `imageinfo.KnownStream` before deriving a target (ADR-0017). Live
+  pin tries the hyphenated tag first, then the dotted tag only on a registry
+  404; any other error refuses. Unpin requires a dated booted tag and verifies
+  the recovered stream. Both enforce container signature policy. Dry runs
+  derive without registry access; both commands require a valid channel table.
   `internal/ubluehelper`'s tests assert
   this per command, and the e2e boundary test asserts the installed binary
   rejects each shape. `cmd/chairlift-helper`'s dispatch carries a
@@ -645,11 +652,11 @@ An agent must not break these:
   registry that models GHCR's pagination, its 404 `MANIFEST_UNKNOWN`, and the
   fact that the response's `Content-Type` header, not the body's `mediaType`
   field, is the media-type authority (GHCR omits `mediaType` on some dated-tag
-  manifests — verified 2026-09-22). Two rules keep it safe to grow: nothing it
-  returns may reach a privileged path — a `bootc switch` target is still
-  `internal/imageinfo`'s tables and only those (ADR-0011), and a pin is a
-  separate decision because no image reference crosses the ublue pkexec
-  boundary — and the catalog is never baked, cached to disk, or served stale,
+  manifests — verified 2026-09-22). Two rules keep it safe to grow: no
+  registry-supplied string may become a privileged switch target. Pin and
+  unpin call only `Client.Tag` to verify targets already derived from the
+  descriptor, channel table, and validated day (ADR-0017), discarding the
+  response data. The catalog is never baked, cached to disk, or served stale,
   because a catalog that is not the registry's is the failure this design
   exists to avoid. A failed read is returned to the caller, never cached and
   never replaced by a previous answer. `Catalog` caches in process only,

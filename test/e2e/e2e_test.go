@@ -271,6 +271,9 @@ func TestInstalledBundleAndHelperBoundary(t *testing.T) {
 		{name: "ublue driver switch without a driver", helper: "chairlift-helper", args: []string{"driver-switch"}, wantStderr: "usage: chairlift-helper driver-switch"},
 		// A factory reset takes no argument at all; the target is always the
 		// image already booted.
+		{name: "ublue pin refuses image reference", helper: "chairlift-helper", args: []string{"pin", "ghcr.io/evil/image:20240229"}, wantStderr: "usage: chairlift-helper pin"},
+		{name: "ublue pin refuses invalid day", helper: "chairlift-helper", args: []string{"pin", "20260230"}, wantStderr: "usage: chairlift-helper pin"},
+		{name: "ublue unpin refuses target", helper: "chairlift-helper", args: []string{"unpin", "stable"}, wantStderr: "usage: chairlift-helper unpin"},
 		{name: "ublue factory reset with a flag", helper: "chairlift-helper", args: []string{"factory-reset", "--force"}, wantStderr: "usage: chairlift-helper factory-reset"},
 		{name: "ublue factory reset with extra argument", helper: "chairlift-helper", args: []string{"factory-reset", "--dry-run", "now"}, wantStderr: "usage: chairlift-helper factory-reset"},
 	}

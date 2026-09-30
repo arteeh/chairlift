@@ -34,8 +34,8 @@ import (
 // command-specific line is what separates "the arm ran" from "the switch fell
 // through", which a bare exit status cannot distinguish.
 //
-// Two commands cannot dry-run to completion off a Bluefin-family host:
-// `channel-switch` and `driver-switch` resolve their target from the
+// Target-derived commands cannot dry-run to completion off a Bluefin-family
+// host: `channel-switch`, `driver-switch`, `pin`, and `unpin` resolve from the
 // root-owned descriptor at imageinfo.DescriptorPath before the dry-run check,
 // by design — the reference must never arrive as an argument. Their
 // expectation is therefore chosen from the descriptor's presence rather than
@@ -89,6 +89,9 @@ func acceptedHelperCommands() []acceptedCommand {
 			command: command,
 			args:    []string{command, argument, "--dry-run"},
 		}
+		if argument == "" {
+			this.args = []string{command, "--dry-run"}
+		}
 		if descriptorPresent {
 			this.wantStdout = []string{"[DRY-RUN] would execute: bootc [switch"}
 			this.allowRefusal = refusalPrefixes
@@ -99,6 +102,8 @@ func acceptedHelperCommands() []acceptedCommand {
 	}
 
 	return []acceptedCommand{
+		switchCases("pin dated build", ubluehelper.CommandPin, "20240229", "pin target:"),
+		switchCases("unpin to stream", ubluehelper.CommandUnpin, "", "pin target:"),
 		switchCases("channel switch to stable", ubluehelper.CommandChannelSwitch, ubluehelper.ChannelStable, "no stable image is defined for the running tag"),
 		switchCases("driver switch to standard", ubluehelper.CommandDriverSwitch, string(imageinfo.DriverStandard), "no standard image is published for"),
 		{
@@ -286,7 +291,7 @@ func TestAcceptedHelperCommandsReachTheirDispatchArm(t *testing.T) {
 
 // TestEveryHelperCommandHasAnAcceptedCase is the drift half of the gate. The
 // table above is hand-written, but its completeness is derived from the
-// parsers' own command sets, so a tenth ublue subcommand or a fourth updex
+// parsers' own command sets, so another ublue subcommand or a fourth updex
 // command cannot be added with only a rejection case for company.
 func TestEveryHelperCommandHasAnAcceptedCase(t *testing.T) {
 	covered := map[string]map[string]bool{}

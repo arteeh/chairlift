@@ -26,6 +26,7 @@ import (
 	"time"
 
 	"github.com/projectbluefin/chairlift/internal/imageinfo"
+	"github.com/projectbluefin/chairlift/internal/registrytags"
 	"github.com/projectbluefin/chairlift/internal/ubluehelper"
 )
 
@@ -63,6 +64,8 @@ func main() {
 		runAutoUpdates(ctx, invocation)
 	case ubluehelper.CommandDriverSwitch:
 		runDriverSwitch(ctx, invocation)
+	case ubluehelper.CommandPin, ubluehelper.CommandUnpin:
+		runPin(ctx, invocation)
 	case ubluehelper.CommandFactoryReset:
 		runFactoryReset(ctx, invocation)
 	default:
@@ -123,6 +126,28 @@ func runDriverSwitch(ctx context.Context, invocation ubluehelper.Invocation) {
 
 	if err := run(ctx, "bootc", args...); err != nil {
 		fatal(fmt.Sprintf("driver switch failed: %v", err))
+	}
+	fmt.Printf("switched to %s — restart to apply\n", args[len(args)-1])
+}
+
+// runPin supplies only the system descriptor and single-tag registry resolver;
+// the gated helper package owns all target derivation and refusal decisions.
+func runPin(ctx context.Context, invocation ubluehelper.Invocation) {
+	info, err := imageinfo.Detect()
+	if err != nil {
+		fatal(fmt.Sprintf("reading %s: %v", imageinfo.DescriptorPath, err))
+	}
+	client := &registrytags.Client{}
+	args, err := ubluehelper.PinArgs(ctx, info, invocation, client.Tag)
+	if err != nil {
+		fatal(err.Error())
+	}
+	if invocation.DryRun {
+		fmt.Printf("[DRY-RUN] would execute: bootc %v\n", args)
+		return
+	}
+	if err := run(ctx, "bootc", args...); err != nil {
+		fatal(fmt.Sprintf("bootc switch failed: %v", err))
 	}
 	fmt.Printf("switched to %s — restart to apply\n", args[len(args)-1])
 }
