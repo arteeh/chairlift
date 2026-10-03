@@ -368,7 +368,8 @@ func defaultConfig() *Config {
 			"reset_group": GroupConfig{Enabled: false},
 		},
 		FeaturesPage: PageConfig{
-			"features_group": GroupConfig{Enabled: true},
+			"features_group":             GroupConfig{Enabled: true},
+			"desktop_integrations_group": GroupConfig{Enabled: true},
 			// Capabilities you turn on. Both hide themselves when
 			// internal/ublue reports no /usr/share/ublue-os/image-info.json,
 			// which is every non-Bluefin host.

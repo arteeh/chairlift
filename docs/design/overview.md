@@ -1397,6 +1397,19 @@ switch. Enable and Disable validate the selected IDs before mutation. System
 entries are never removed, partial outcomes stay visible, and a dry-run keeps
 the confirmed inventory unchanged.
 
+### Desktop integration switches (`internal/shellextensions`)
+
+`features_page.desktop_integrations_group` owns the Tailscale Integration and
+Sync Folder Integration rows. The pure-Go provider reads `gnome-extensions
+list` and `list --enabled`, preserving GNOME's choices, and permits only
+`enable`/`disable` with the two fixed UUIDs from Dakota's Tailscale QS build and
+Bluefin Bling's Sync Folder metadata. No service or privileged helper is called.
+The view uses guarded switches, disables input during reads and writes, and
+re-reads after mutations to detect rejected changes. Failed verification leaves
+the switch insensitive; missing tools, sessions and extensions are explained.
+Default presentation is Tailscale on and Sync Folder off, but existing GNOME
+state always wins. OS-image extension defaults remain owned by the image.
+
 ### Custom Command Menu developer visibility (`internal/devmenu`)
 
 `internal/devmenu` manages the Custom Command Menu GNOME Shell extension (`org.gnome.shell.extensions.custom-command-list`) visibility for developer tools (Terminal and Containers):

@@ -198,11 +198,12 @@ func TestWalkthroughCoversEveryConfigurableGroup(t *testing.T) {
 		"maintenance_freespace_group": "Free up space",
 		"reset_group":                 "Recovery",
 		// features_page
-		"features_group":        "feature manager",
-		"dx_group":              "Developer tools",
-		"gaming_group":          "**Gaming**",
-		"printers_group":        "**Printers**",
-		"troubleshooting_group": "Enhanced Troubleshooting",
+		"features_group":             "feature manager",
+		"desktop_integrations_group": "Desktop integrations",
+		"dx_group":                   "Developer tools",
+		"gaming_group":               "**Gaming**",
+		"printers_group":             "**Printers**",
+		"troubleshooting_group":      "Enhanced Troubleshooting",
 		// livery_page
 		"account_group":           "Profile Picture",
 		"livery_app_grid_group":   "App Grid Livery",

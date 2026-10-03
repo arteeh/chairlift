@@ -155,7 +155,7 @@ Feature: Features page — Developer Mode, WSL Mode, Docker, selective Gaming, a
     Then each gaming component says "Installed system-wide; left in place"
     And I see "Gaming Mode"
 
-  @stub.features-no-descriptor @stub.features-gaming-none
+  @config.features-no-desktop @stub.features-no-descriptor @stub.features-gaming-none
   Scenario: Without a Bluefin descriptor Developer and Gaming are not offered
     Given ChairLift is running
     When I open the "Features" page
@@ -180,7 +180,7 @@ Feature: Features page — Developer Mode, WSL Mode, Docker, selective Gaming, a
     And I do not see "WSL Mode"
     And I do not see "Enable Docker"
 
-  @stub.features-no-descriptor @stub.features-gaming-none
+  @config.features-no-desktop @stub.features-no-descriptor @stub.features-gaming-none
   @env.CHAIRLIFT_CAPABILITIES=image-descriptor,flatpak,brew,bootc-stage
   Scenario: A host with nothing to offer does not advertise a blank Features page
     Given ChairLift is running
@@ -238,3 +238,38 @@ Feature: Features page — Developer Mode, WSL Mode, Docker, selective Gaming, a
     And I ask the Help page why something is missing
     Then the Help page explains "Agent Mode" with "Needs Homebrew"
     And the Help page does not call "Printers" missing
+
+  @stub.features-extensions
+  Scenario: Desktop integrations preserve their observed state in preview mode
+    Given ChairLift is running
+    When I open the "Features" page
+    Then the switch in the "Tailscale Integration" row is on
+    And the switch in the "Sync Folder Integration" row is off
+    And the switch in the "Tailscale Integration" row accepts input
+    When I toggle the switch in the "Tailscale Integration" row
+    Then the application log contains "Would execute: gnome-extensions disable tailscale-gnome-qs@tailscale-qs.github.io"
+    And the switch in the "Tailscale Integration" row is on
+    When I toggle the switch in the "Sync Folder Integration" row
+    Then the application log contains "Would execute: gnome-extensions enable syncthing-toggle@projectbluefin.io"
+    And the switch in the "Sync Folder Integration" row is off
+    And the fake gnome-extensions was never asked to "enable"
+    And the fake gnome-extensions was never asked to "disable"
+
+  @stub.features-extensions-reversed
+  Scenario: Desktop integrations restore existing GNOME choices instead of defaults
+    Given ChairLift is running
+    When I open the "Features" page
+    Then the switch in the "Tailscale Integration" row accepts input
+    And the switch in the "Tailscale Integration" row is off
+    And the switch in the "Sync Folder Integration" row is on
+    And the fake gnome-extensions was never asked to "enable"
+    And the fake gnome-extensions was never asked to "disable"
+
+  @stub.features-extensions-missing
+  Scenario: Missing desktop extensions are explained without permitting changes
+    Given ChairLift is running
+    When I open the "Features" page
+    Then the "Tailscale Integration" row says "This GNOME extension is not installed."
+    And the switch in the "Tailscale Integration" row refuses input
+    And the "Sync Folder Integration" row says "This GNOME extension is not installed."
+    And the switch in the "Sync Folder Integration" row refuses input

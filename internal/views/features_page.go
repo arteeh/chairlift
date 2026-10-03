@@ -79,6 +79,10 @@ func (uh *UserHome) buildFeaturesPage() {
 	}
 
 	bluefinGroups := uh.buildBluefinGroups(page)
+	desktopIntegrations := uh.groupEnabled("features_page", "desktop_integrations_group")
+	if desktopIntegrations {
+		uh.buildShellExtensionsGroup(page)
+	}
 
 	// Printer applications sit under Developer and Gaming: like them they
 	// are capabilities you turn on, and each is a user-scope service.
@@ -97,7 +101,7 @@ func (uh *UserHome) buildFeaturesPage() {
 	emptyGroup.Add(&emptyState.Widget)
 	emptyGroup.SetVisible(false)
 	showEmptyState := func(optionalFeatures bool) {
-		text, empty := pageview.FeaturesEmptyState(bluefinGroups, printers, optionalFeatures)
+		text, empty := pageview.FeaturesEmptyState(bluefinGroups || desktopIntegrations, printers, optionalFeatures)
 		if empty {
 			emptyState.SetTitle(text.Title)
 			emptyState.SetDescription(text.Subtitle)

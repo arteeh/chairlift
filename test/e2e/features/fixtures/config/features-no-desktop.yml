@@ -1,0 +1,4 @@
+# Exercise the Features empty state without discoverable desktop integrations.
+features_page:
+  desktop_integrations_group:
+    enabled: false

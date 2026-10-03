@@ -244,3 +244,33 @@ case "$1" in
 esac
 exit 0
 """)
+
+
+def _shell_extensions(context, enabled, missing=False):
+    installed = "" if missing else "tailscale-gnome-qs@tailscale-qs.github.io\nsyncthing-toggle@projectbluefin.io"
+    fake_executable(
+        context,
+        "gnome-extensions",
+        _recorder(context) + f"""
+case "$*" in
+  list) printf '%s\\n' '{installed}' ;;
+  'list --enabled') printf '%s\\n' '{enabled}' ;;
+  *) exit 1 ;;
+esac
+""",
+    )
+
+
+@stub("features-extensions")
+def shell_extensions(context):
+    _shell_extensions(context, "tailscale-gnome-qs@tailscale-qs.github.io")
+
+
+@stub("features-extensions-reversed")
+def shell_extensions_reversed(context):
+    _shell_extensions(context, "syncthing-toggle@projectbluefin.io")
+
+
+@stub("features-extensions-missing")
+def shell_extensions_missing(context):
+    _shell_extensions(context, "", missing=True)

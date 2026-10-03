@@ -71,6 +71,9 @@ maintenance_page:
     enabled: false
 
 features_page:
+  # User-session GNOME extension switches; unavailable hosts explain why.
+  desktop_integrations_group:
+    enabled: true
   features_group:
     enabled: true
   # Capabilities you turn on. Each hides itself on a host with no

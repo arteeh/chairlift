@@ -257,3 +257,13 @@ Systemd invocation identity: Context7 `/systemd/systemd`,
 observes the service invocation; `daemon-reload` alone does not restart it.
 llmman's [peer configuration source](https://github.com/llmmanorg/llmman/blob/main/src/config.rs)
 uses an explicitly set empty `LLMMAN_PEERS` before saved aggregation settings.
+
+## GNOME extension controls
+
+Stub `gnome-extensions` on the scenario's PATH for extension-switch scenarios.
+Use both a normal and reversed enabled list: the reversed list catches a view
+that paints its suggested defaults instead of the user's actual preferences.
+Assert that opening the page and toggling in dry-run never execute `enable` or
+`disable`; keep real command failure and UUID allowlist tests in the pure-Go
+provider. A successful CLI exit alone is not proof of changed GNOME state, so
+production handlers must reload and compare before confirming the switch.

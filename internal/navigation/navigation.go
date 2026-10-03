@@ -169,6 +169,7 @@ var routes = []Item{
 		Kind:  KindPrimary,
 		Refs: refsOn("features_page",
 			"features_group",
+			"desktop_integrations_group",
 			"dx_group",
 			"gaming_group",
 			"printers_group",

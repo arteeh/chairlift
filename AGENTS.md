@@ -149,6 +149,13 @@ control is hand-written Go, YAML, and data assets.
 
 ## Repository invariants
 
+- **Desktop integration switches reflect GNOME state.**
+  `internal/shellextensions` allows only the Tailscale QS and Bluefin Sync Folder
+  UUIDs. It uses unprivileged `gnome-extensions` commands, reads without writing
+  on load, and re-reads after changes instead of treating exit 0 as proof.
+  `desktop_integrations_group` stays discoverable on unsupported hosts with
+  insensitive switches. Dry-run skips mutation and restores observed state.
+
 An agent must not break these:
 
 - **Privilege boundary.** State-changing operations that require root go

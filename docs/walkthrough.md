@@ -130,6 +130,15 @@ here runs in your own account, without an administrator password.
 
 ![Features](screenshots/4-features.png)
 
+**Desktop integrations** offers **Tailscale Integration** and **Sync Folder
+Integration** switches for GNOME Quick Settings. Tailscale's initial switch
+position is on and Sync Folder's is off; once GNOME answers, the switches show
+its actual saved choices. Sync Folder is marked as not ready yet. A missing
+extension or GNOME session leaves its control unavailable and explains why.
+Changing a switch enables or disables that extension for your account; it does
+not install software or start Tailscale or Sync Folder services. Preview mode
+leaves GNOME preferences unchanged.
+
 **Developer tools** lets you run containers and virtual machines, and use USB
 and serial hardware, without being asked for permission each time. It needs
 your administrator password, and takes effect after you log out and back in.

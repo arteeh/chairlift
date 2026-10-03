@@ -258,6 +258,7 @@ var prerequisites = []Prerequisite{
 	// Features.
 	{Page: "features_page", Group: "dx_group", AnyOf: []Capability{ImageDescriptor}},
 	{Page: "features_page", Group: "features_group"},
+	{Page: "features_page", Group: "desktop_integrations_group"},
 	{Page: "features_page", Group: "gaming_group", AnyOf: []Capability{ImageDescriptor}},
 	{Page: "features_page", Group: "printers_group", AnyOf: []Capability{Podman}},
 	{Page: "help_page", Group: "troubleshooting_group", AnyOf: []Capability{Homebrew}},
